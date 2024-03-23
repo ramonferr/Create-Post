@@ -1,5 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
+        @if(Session::has('success_message'))
+            <div class="flex justify-center">
+                <div class="flex rounded-md text-medium text-xl text-white h-auto w-auto bg-green-500">
+                    <span class="p-1">
+                        {{ Session::get('success_message') }}
+                    </span>
+                </div>
+            </div>   
+        @endif
+         
         <div class="flex justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ 'Posts' }}

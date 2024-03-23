@@ -6,10 +6,8 @@ use App\Http\Requests\Post\StoreRequest;
 use App\Http\Requests\Post\UpdateRequest;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
-// Use the Post Model
-use Illuminate\Http\Request;
-// We will use Form Request to validate incoming requests from our store and update method
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -26,7 +24,7 @@ class PostController extends Controller
         return response()->view('posts.form');
     }
 
-    public function store(StoreRequest $request): RedirectResponse // oque está sendo passado como parametro nesse metodo se injecao de dependencia
+    public function store(StoreRequest $request) // oque está sendo passado como parametro nesse metodo se injecao de dependencia
     {
         $validated = $request->validated();
 
@@ -35,15 +33,11 @@ class PostController extends Controller
             $validated['featured_image'] = $filePath;
         }
 
-        $create = Post::create($validated);
+        Post::create($validated);
 
-        if ($create) {
-            session()->flash('notif.success', 'Post created successfully!');
+        Session::flash('success_message', 'Post criado com sucesso!');
 
-            return redirect()->route('posts.index');
-        }
-
-        return abort(500);
+       return redirect()->route('posts.index');
     }
 
     public function show(string $id): Response // parametro
@@ -58,6 +52,7 @@ class PostController extends Controller
         return response()->view('posts.form', [
             'post' => Post::findOrFail($id),
         ]);
+
     }
 
     public function update(UpdateRequest $request, string $id): RedirectResponse
@@ -72,15 +67,13 @@ class PostController extends Controller
             $validated['featured_image'] = $filePath;
         }
 
-        $update = $post->update($validated);
+        $post->update($validated);
 
-        if ($update) {
-            session()->flash('notif.success', 'Post updated successfully!');
+        Session::flash('success_message', 'Post atualizado com sucesso!');
 
-            return redirect()->route('posts.index');
-        }
+        return redirect()->route('posts.index');
+    
 
-        return abort(500);
     }
 
     public function destroy(string $id): RedirectResponse
@@ -89,14 +82,13 @@ class PostController extends Controller
 
         Storage::disk('public')->delete($post->featured_image);
 
-        $delete = $post->delete($id);
+        $post->delete($id);
 
-        if ($delete) {
-            session()->flash('notif.success', 'Post deleted successfully!');
+        Session::flash('success_message', 'Post deletado com sucesso!');
 
-            return redirect()->route('posts.index');
-        }
 
-        return abort(500);
+        return redirect()->route('posts.index');
+    
+
     }
 }
